@@ -3,9 +3,6 @@ library(nlme)
 data<-read.table("cmort.txt", sep="\t", dec=".", head=TRUE)
 head(data)
 tail(data)
-# add unknown next value to predict it in future
-data[nrow(data) + 1,] = c(509, NA)
-newdata<-data
 t<-data$t
 x1<-t
 x2<-t^2
@@ -37,7 +34,17 @@ summary(modelH1)
 anova(modelH0, modelH1)
 
 # predict model's value at the next step
-nn<-dim(data)[1]
+newdata<-data
+# add unknown next value to predict 
+newdata[nrow(data) + 1,] = c(509, NA)
+t<-newdata$t
+y<-newdata$y
+x1<-t
+x2<-t^2
+x3<-t^3
+x4<-cos(2*pi*t/52)
+x5<-sin(2*pi*t/52)
+nn<-dim(newdata)[1]
 T<-data.frame(t=1:nn)
 cs<-corAR1(paramsAR,form = ~ 1)
 cs<-Initialize(cs, data = T)
@@ -52,14 +59,14 @@ blup
 blup[509]
 
 # 80 % interval of prediction 
-sigma2<-summary(M_GLS)$sigma^2
+sigma<-summary(M_GLS)$sigma^2
 X<-model.matrix(~x1+x2+x3+x4+x5, data=training)
 vf<-Sigma[nn,nn]
-xf<-t(t(c(1,73.33,57.58)))
-var.error<-sigma2*(vf-t(w)%*%solve(V)%*%w+(t(xf)-t(w)%*%solve(V)%*%X)%*%solve(t(X)%*%solve(V)%*%X)%*%(xf-t(X)%*%solve(V)%*%w))
+xf<-t(t(c(1, x1[508], x2[508], x3[508], x4[508], x5[508])))
+error<-sigma*(vf-t(w)%*%solve(V)%*%w+(t(xf)-t(w)%*%solve(V)%*%X)%*%solve(t(X)%*%solve(V)%*%X, tol = 1e-17)%*%(xf-t(X)%*%solve(V)%*%w))
 
-lowerbound<-blup-qnorm(0.9)*sqrt(var.error)
-lowerbound
+lowerbound<-blup-qnorm(0.9)*sqrt(error)
+lowerbound[509]
 
-upperbound<-blup+qnorm(0.9)*sqrt(var.error)
-upperbound
+upperbound<-blup+qnorm(0.9)*sqrt(error)
+upperbound[509]
