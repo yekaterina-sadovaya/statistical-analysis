@@ -14,8 +14,6 @@ training<-data.frame(x1,x2,x3,x4,x5,y)
 M<-lm(y~x1+x2+x3+x4+x5,data=training)
 summary(M)
 e<-residuals(M)
-plot(e,type="n")
-lines(e)
 # estimate of the AR parameters
 ar(e, aic = FALSE, order.max = 1)
 M_GLS<-gls(y~x1+x2+x3+x4+x5,

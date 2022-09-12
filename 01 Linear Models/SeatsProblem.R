@@ -7,7 +7,7 @@ data$Combo<-as.character(data$Combo)
 x<-model.matrix(~Position, data=data)
 # estimate the parameters
 aitken<-gls(Length~Position, correlation = corCompSymm(form=~1|Combo), 
-            data=data)
+            data=data, method="ML")
 summary(aitken)
 # estimate correlation
 rho<-coef(aitken$model$corStruct,unconstrained=FALSE)
@@ -18,8 +18,9 @@ R<-corMatrix(cs)
 V<-diag(6)%x%R$`1`  
 
 # test significance 
-r1 <- t.test(Length ~ Position, data = data)
-r1
+m2<-gls(Length~1, correlation = corCompSymm(form=~1|Combo), 
+            data=data, method="ML")
+anova(aitken, m2)
 
 # confidence interval for light seat position
 betahat<-coef(aitken)
@@ -28,5 +29,5 @@ x_star<-rep(0, 2)
 x_star[1]<-1
 x_star<-t(t(x_star))
 mu_hat<-t(x_star)%*%betahat
-lower<-mu_hat-qnorm(0.95)*sqrt(sig*t(x_star)%*%solve(t(x)%*%solve(V)%*%x)%*%x_star)
-upper<-mu_hat+qnorm(0.95)*sqrt(sig*t(x_star)%*%solve(t(x)%*%solve(V)%*%x)%*%x_star)
+lower<-mu_hat-qnorm(0.975)*sqrt(sig*t(x_star)%*%solve(t(x)%*%solve(V)%*%x)%*%x_star)
+upper<-mu_hat+qnorm(0.975)*sqrt(sig*t(x_star)%*%solve(t(x)%*%solve(V)%*%x)%*%x_star)
