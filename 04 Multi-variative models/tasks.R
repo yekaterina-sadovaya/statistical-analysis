@@ -91,18 +91,20 @@ BP
 Sigma = sigma(model)
 
 X<-model.matrix(model)
-xf<-t(cbind(1,newdata))
+xf<-t(cbind(1, 35, 0, 1, 0))
 cov.error<-Sigma*as.numeric(1+t(xf)%*%solve(t(X)%*%X)%*%xf)
 
-lower.bound<-BP-qnorm(0.9)*diag(cov.error)^0.5
-upper.bound<-BP+qnorm(0.9)*diag(cov.error)^0.5
+lower.bound<-BP-qnorm(0.9)*(cov.error)^0.5
+upper.bound<-BP+qnorm(0.9)*(cov.error)^0.5
 lower.bound
 upper.bound
+
 # d
-yf1<-c(25,29.50)
+yf1<-c(13.5,9.0)
 Bt<-t(coef(model))
 B1t<-Bt[1:2,]
 B2t<-Bt[3,]
+Sigma<-diag(Sigma)
 Sigma11<-Sigma[1:2,1:2]
 Sigma12<-Sigma[1:2,3]
 Sigma21<-Sigma[3,1:2]
