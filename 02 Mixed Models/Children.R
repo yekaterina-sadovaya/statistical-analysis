@@ -1,3 +1,4 @@
+### Children Height
 setwd('./02 Mixed Models')
 library(lme4)
 rm(list = ls())
@@ -5,23 +6,29 @@ data<-read.table("heightchildren.txt", sep="\t", dec=".", header=TRUE)
 attach(data)
 head(data)
 tail(data)
-interaction.plot(ID,gender,height)
-# a
-model<-lmer(height~(age + poly(age, degree=2) + poly(age, degree=3))*gender + (1+gender|ID), data=data)
+boys = data[which(data$gender == "boy"), ]
+girls = data[which(data$gender == "girl"), ]
+interaction.plot(boys$age, boys$ID, boys$height)
+interaction.plot(girls$age, girls$ID, girls$height)
+# create a mixed-effect mdoel using lmer
+model<-lmer(height~(age + poly(age, degree=2) + poly(age, degree=3)):gender + (1+age|ID), data=data, REML=FALSE)
 summary(model)
-# b
+# compute random effects
 ranef(model)
 ranef(model)$ID[[93, 2]]
-# c
-model.H0<-lmer(height~age + poly(age, degree=2) + poly(age, degree=3) + (1+gender|ID), data=data, REML=FALSE)
-model.H1<-lmer(height~(age + poly(age, degree=2) + poly(age, degree=3))*gender + (1+gender|ID), data=data, REML=FALSE)
+# test hyphothesis (if gender is a significant variable)
+model.H0<-lmer(height~age + poly(age, degree=2) + poly(age, degree=3) + (1+age|ID), data=data, REML=FALSE)
+model.H1<-lmer(height~(age + poly(age, degree=2) + poly(age, degree=3)):gender + (1+age|ID), data=data, REML=FALSE)
 anova(model.H0, model.H1)
-anova(model.H0, model.H1)$Chisq[2]
-# d
+# show gender importance, if the p < 0.05, it is a significant variable
+anova(model.H0, model.H1)$Pr[2]
+# predict value of some ungiven data point using the developed mdoel
 newdata<-expand.grid(ID=3, gender='girl', age=19)
 mu.pred<-predict(model, newdata=newdata)
 mu.pred
 
+
+### 
 rm(list = ls())
 data<-read.table("treemoisture.txt", header=TRUE, sep="\t", dec=".")
 x1=data$Location
@@ -58,14 +65,8 @@ sigma2
 model.H0<-lmer(y~(x1+x2)*z + (1|z), data=data, REML=FALSE)
 model.H1<-lmer(y~(x1+x2+x3)*z + (1|z), data=data, REML=FALSE)
 anova(model.H0, model.H1)
+anova(model.H0, model.H1)$Pr[2]
 # e
 newdata<-expand.grid(x1='Central', x2='Yellow Poplar', x3='Slow', z=15)
-mu.pred<-predict(model, newdata=newdata)
+mu.pred<-predict(model_mixed_eff, newdata=newdata)
 mu.pred
-
-
-rm(list = ls())
-data<-read.table("foreststage.txt", sep="\t", dec=".", header=TRUE)
-model<-lmer(height.m~dbhib.cm+I(dbhib.cm^2)+(1+dbhib.cm|ID)+(1|Forest.ID), data=data)
-summary(model)
-v <- VarCorr(model)
