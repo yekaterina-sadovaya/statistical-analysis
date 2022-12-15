@@ -28,7 +28,7 @@ mu.pred<-predict(model, newdata=newdata)
 mu.pred
 
 
-### 
+### Tree moisture
 rm(list = ls())
 data<-read.table("treemoisture.txt", header=TRUE, sep="\t", dec=".")
 x1=data$Location
@@ -45,7 +45,7 @@ AIC(m1, m2, m3)
 # use the one, which gave the best score
 model_mixed_eff<-lmer(y~x1*x2*x3 + (1|z), data=data)
 summary(model_mixed_eff)
-# a
+
 # all estimation for mu
 mu_all = model_mixed_eff@resp$mu
 # next, we need to specify the indices where x1 = Central, x2 = Yellow Poplar, 
@@ -56,17 +56,17 @@ indexes_string = row.names(sub_data)
 indexes = as.numeric(unlist(strsplit(indexes_string, ",", fixed=TRUE)))
 # finally, we can obtain the estimate for the required values
 mu_all[indexes]
-# b
+# random effects
 ranef(model_mixed_eff)$z[10,1]
-# c
+# restricted maximum likelihood estimate of sigma
 sigma2<-sigma(model_mixed_eff)^2
 sigma2
-# d
+# test hypothesis if transpiration is significant variable
 model.H0<-lmer(y~(x1+x2)*z + (1|z), data=data, REML=FALSE)
 model.H1<-lmer(y~(x1+x2+x3)*z + (1|z), data=data, REML=FALSE)
 anova(model.H0, model.H1)
 anova(model.H0, model.H1)$Pr[2]
-# e
+# maximum likelihood prediction of mu
 newdata<-expand.grid(x1='Central', x2='Yellow Poplar', x3='Slow', z=15)
 mu.pred<-predict(model_mixed_eff, newdata=newdata)
 mu.pred
