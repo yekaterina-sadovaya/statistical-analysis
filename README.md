@@ -47,3 +47,15 @@ urine of young men. The men are categorized into four groups based on their degr
 
 ## 05 Functional Data Models
 
+Funtional data is multi-variative. In functional data analysis, data consist of at least a pair of discrete observations of time T and the response for each sampling unit.
+It can be written similarly to the multi-variative model, e.g., y_it = y_i(t) + ε_it. But the main difference is that y_i(t) is a smooth function (curve).
+
+The solutions semonstrate how to describe the data using a growth curve model. The first dataset corresponds to an experiment in which a treatment for depression is studied.
+Two groups of patients (1: control / 2: treatment) have been followed at four different times
+(0: pre-test, 1: one month post-test, 3: 3 months follow-up and 6: 6 months follow-up).
+The dependent variable is a depression score.
+
+The second dataset is from a study of weight gain **Box, G.E.P. (1950). Problems in the analysis of growth and wear curves. Biometrics, 6, 362-389**, where investigators randomly assigned 30 rats
+to three treatment groups: treatment 1 was a control (no additive); treatments 2 and 3
+consisted of two different additives (thiouracil and thyroxin respectively) to
+the rats drinking water.Weight was measured at baseline (week 0) and at weeks 1, 2, 3, and 4.
